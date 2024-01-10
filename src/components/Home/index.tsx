@@ -8,13 +8,12 @@ export const Home = () => {
 
   const handleLevelSelect = (level: number) => {
     setLevel(level);
-    console.log('home level', level);
   };
 
   return (
     <main className="w-full flex flex-col items-center justify-between gap-4 p-4">
       { level < 0 &&
-        <Level onSelect={handleLevelSelect} />
+        <Level onSelect={handleLevelSelect}/>
       }
       {level >= 0 &&
         <Game

@@ -58,7 +58,6 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
 
   const finishGame = (results: {track: string, correct: boolean}[]) => {
     setGameFinished(true);
-    console.log('game over', results);
   };
 
   const handleFinish = (track: string, answer: string, correct: boolean, time: number) => {

@@ -14,7 +14,7 @@ export interface ShareProps {
   }[];
   showYourAnswers: boolean;
   level: number;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const Share = ({children, results, showYourAnswers, level, onClick}: ShareProps) => {
@@ -228,7 +228,7 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
   const handleClick = () => {
     createImage();
     share();
-    onClick();
+    onClick?.();
   };
 
   // useEffect(() => {

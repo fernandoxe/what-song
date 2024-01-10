@@ -67,7 +67,6 @@ export const Results = ({level, results}: ResultsProps) => {
             results={results}
             showYourAnswers={showYourAnswers}
             level={level}
-            onClick={() => console.log('share')}
           >
             Share
           </Share>

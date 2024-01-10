@@ -25,7 +25,6 @@ export const Round = ({verse, tracks, round, rounds, onFinish}: RoundProps) => {
   const lyricsRef = useRef<HTMLDivElement>(null);
 
   const handleTrackSelect = (trackName: string) => {
-    console.log(verse.track, trackName);
     pause();
     setTrackName(trackName);
     setFilteredTracks([]);
@@ -41,14 +40,12 @@ export const Round = ({verse, tracks, round, rounds, onFinish}: RoundProps) => {
   };
 
   const handleResultAnimationComplete = () => {
-    console.log('complete animation');
     setTimeout(() => {
       onFinish(verse.track, trackName, correct, time);
     }, 1000);
   };
 
   useEffect(() => {
-    console.log('reset', isSelectedTrack);
     setCorrect(false);
     setShowResult(false);
     setTrackName('');
