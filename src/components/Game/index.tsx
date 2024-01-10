@@ -1,9 +1,11 @@
-import { VerseApi, levels } from "@/interfaces";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Round } from "../Round";
-import { ROUNDS } from "@/constants";
-import { Results } from "../Results";
+import { VerseApi } from '@/interfaces';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Round } from '../Round';
+import { LEVELS, ROUNDS } from '@/constants';
+import { Results } from '../Results';
+import { Button } from '../Button';
+import { Loader } from '../Loader';
 
 export interface GameProps {
   level: number;
@@ -15,13 +17,13 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
   const [tracks, setTracks] = useState<string[]>([]);
   const [round, setRound] = useState<number>(0);
   const [currentVerse, setCurrentVerse] = useState<VerseApi>();
-  const [results, setResults] = useState<{track: string, correct: boolean}[]>([]);
+  const [results, setResults] = useState<{track: string, answer: string, correct: boolean, time: number}[]>([]);
   const [gameFinished, setGameFinished] = useState<boolean>(false);
 
   useEffect(() => {
-    const getTracks = async () => {
+    const getGameVerses = async () => {
       try {
-        const { data } = await axios.get<VerseApi[]>(`/api/${levels[level]}/${ROUNDS}`);
+        const { data } = await axios.get<VerseApi[]>(`/api/${LEVELS[level].code}/${ROUNDS}`);
         setGameVerses(data);
         setRound(1);
         setCurrentVerse(data[0]);
@@ -30,7 +32,7 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
       }
     };
 
-    const getGameVerses = async () => {
+    const getTracks = async () => {
       try {
         const { data } = await axios.get(`api/tracks`);
         const tracks = data.map((album: any) => album.tracks).flat().sort();
@@ -59,48 +61,57 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
     console.log('game over', results);
   };
 
-  const handleFinish = (correct: boolean, selectedTrack: string) => {
-    const newResults = [...results, {track: selectedTrack, correct}];
+  const handleFinish = (track: string, answer: string, correct: boolean, time: number) => {
+    const newResults = [...results, {track, answer, correct, time}];
     setResults(newResults);
-    setTimeout(() => {
-      nextRound(newResults);
-    }, 1000);
+    nextRound(newResults);
   };
 
   const handlePlayAgain = () => {
-    setTimeout(() => {
-      onPlayAgain();
-    }, 500);
+    onPlayAgain();
   };
 
   return (
-    <div className="w-full max-w-xl flex flex-col items-center gap-4">
-      <div>
-        <h3 className="text-xl">{levels[level]}</h3>
-      </div>
-      {!gameFinished &&
-        <h4 className="text-lg">
-          What song is this?
-        </h4>
+    <div
+      className="w-full max-w-xl flex flex-col items-center gap-4"
+    >
+      {!gameVerses.length && !tracks.length &&
+        <Loader />
       }
-      {round > 0 && currentVerse && !gameFinished &&
-        <div className="w-full">
-          <Round
-            verse={currentVerse}
-            tracks={tracks}
-            onFinish={handleFinish}
-          />  
-        </div>
+      {currentVerse && !gameFinished &&
+        <>
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-lg font-semibold">
+              What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}&apos;s song is it?
+            </h2>
+            <div>
+              <h3 className="text-base font-semibold">Level: {LEVELS[level].name} ({LEVELS[level].difficulty})</h3>
+            </div>
+          </div>
+          <div className="w-full">
+            <Round
+              verse={currentVerse}
+              tracks={tracks}
+              round={round}
+              rounds={ROUNDS}
+              onFinish={handleFinish}
+            />  
+          </div>
+        </>
       }
       {gameFinished &&
         <>
-          <Results results={results} />
-          <button
-            className="h-12 bg-purple-200 rounded px-4 py-2 text-neutral-900"
+          <Results
+            level={level}
+            results={results}
+          />
+          <Button
             onClick={handlePlayAgain}
           >
-            Play again
-          </button>
+            <div className="text-lg font-semibold">
+              Play again
+            </div>
+          </Button>
         </>
       }
     </div>
