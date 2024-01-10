@@ -176,3 +176,9 @@ export const getVerses = (album: number) => {
 const isChorus = (verse: Verse) => verse.name.toLowerCase().startsWith('chorus');
 const isBridge = (verse: Verse) => verse.name.toLowerCase().startsWith('bridge');
 const isVerse = (verse: Verse) => !isChorus(verse) && !isBridge(verse);
+
+export const formatTime = (time: number) => {
+  const seconds = Math.floor(time / 1000);
+  const ds = (time % 1000) / 100;
+  return `${seconds}.${ds}`;
+};
