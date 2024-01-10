@@ -1,41 +1,61 @@
-import { VerseApi, levels } from "@/interfaces";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { VerseApi } from '@/interfaces';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { Autocomplete } from '../Autocomplete';
+import { RoundResult } from '../RoundResult';
+import { useStopwatch } from '@/hooks/useStopwatch';
+import { formatTime } from '@/services';
 
 export interface RoundProps {
   verse: VerseApi;
   tracks: string[];
-  onFinish: (correct: boolean, selectedTrack: string) => void;
+  round: number;
+  rounds: number;
+  onFinish: (track: string, answer: string, correct: boolean, time: number) => void;
 }
 
-export const Round = ({verse, tracks, onFinish}: RoundProps) => {
-  const [correct, setCorrect] = useState<boolean>(false);
-  const [incorrect, setIncorrect] = useState<boolean>(false);
-  const [trackName, setTrackName] = useState<string>('');
+export const Round = ({verse, tracks, round, rounds, onFinish}: RoundProps) => {
+  const [correct, setCorrect] = useState(false);
+  const [trackName, setTrackName] = useState('');
   const [filteredTracks, setFilteredTracks] = useState<string[]>([]);
-  const [isSelectedTrack, setIsSelectedTrack] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isSelectedTrack, setIsSelectedTrack] = useState(false); // True when the user has selected a track
+  const [focusInput, setFocusInput] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const { time, restart, pause } = useStopwatch();
+  const roundRef = useRef<HTMLDivElement>(null);
+  const lyricsRef = useRef<HTMLDivElement>(null);
 
   const handleTrackSelect = (trackName: string) => {
     console.log(verse.track, trackName);
+    pause();
     setTrackName(trackName);
     setFilteredTracks([]);
+    setIsSelectedTrack(true);
+    setFocusInput(false);
     const isCorrect = verse.track === trackName;
     if(isCorrect) {
       setCorrect(true);
-      setIncorrect(false);
     } else {
       setCorrect(false);
-      setIncorrect(true);
     }
-    onFinish(isCorrect, trackName);
+    setShowResult(true);
+  };
+
+  const handleResultAnimationComplete = () => {
+    console.log('complete animation');
+    setTimeout(() => {
+      onFinish(verse.track, trackName, correct, time);
+    }, 1000);
   };
 
   useEffect(() => {
     console.log('reset', isSelectedTrack);
     setCorrect(false);
-    setIncorrect(false);
+    setShowResult(false);
     setTrackName('');
-    setIsSelectedTrack((prev) => {inputRef.current?.focus(); return false;});
+    setIsSelectedTrack(false);
+    setFocusInput(true);
+    restart();
+    lyricsRef.current?.scrollTo(0, 0);
   }, [verse]);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -45,46 +65,52 @@ export const Round = ({verse, tracks, onFinish}: RoundProps) => {
       setFilteredTracks([]);
       return;
     };
-    const filteredTracks = tracks.filter((track) => track.toLowerCase().includes(value.toLowerCase()));
+    const normalizedValue = value.trim().toLowerCase();
+    const filteredTracks = tracks.filter((track) => track.toLowerCase().includes(normalizedValue));
     setFilteredTracks(filteredTracks);
+  };
+
+  const handleFocus = () => {
+    roundRef.current?.scrollIntoView({behavior: 'smooth'});
   };
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="w-full whitespace-pre-wrap italic">
-        {verse.verses[0].verse.replace(/^\[.*\]\n/, '')}
+      <div className="w-full flex flex-col gap-2 px-8">
+        <div className="flex justify-between text-xs">
+          <div ref={roundRef}>
+            {round} / {rounds}
+          </div>
+          <div className="font-mono">
+            {formatTime(time)}s
+          </div>
+        </div>
+        <div
+          className="flex flex-col font-['Indie_Flower',_cursive] w-full min-h-28 max-h-44 overflow-scroll whitespace-pre-wrap bg-purple-50 rounded py-3 shadow"
+          ref={lyricsRef}
+        >
+          <div className="font-semibold grow bg-[linear-gradient(#c2c4d7_1px,_transparent_1px)] bg-[size:_100%_1.5rem] bg-[position:_0_-1px] pt-2 px-3">
+            {verse.verses[0].verse.replace(/^\[.*\]\n/, '')}
+          </div>
+        </div>
       </div>
       <div className="w-full">
-        <input
-          type="text"
-          className="w-full h-12 bg-purple-200 rounded p-2 text-neutral-900"
-          placeholder="Type the song name"
-          onChange={handleInputChange}
-          value={trackName}
+        <Autocomplete
+          trackName={trackName}
+          filteredTracks={filteredTracks}
           disabled={isSelectedTrack}
-          ref={inputRef}
+          focus={focusInput}
+          onTrackSelect={handleTrackSelect}
+          onInputChange={handleInputChange}
+          onFocus={handleFocus}
         />
-        <ul className="w-full max-h-64 overflow-scroll -translate-y-0">
-          {filteredTracks.map((track) => (
-            <li
-              key={track}
-              className="w-full bg-purple-200 p-2 text-neutral-900 hover:bg-purple-400"
-              onClick={() => handleTrackSelect(track)}
-            >
-              {track}
-            </li>
-          ))}
-        </ul>
       </div>
-      {correct &&
-        <div className="w-full">
-          <h1 className="text-2xl text-center text-green-500">Correct!</h1>
-        </div>
-      }
-      {incorrect &&
-        <div className="w-full">
-          <h1 className="text-2xl text-center text-red-500">Incorrect!</h1>
-        </div>
+      {showResult &&
+        <RoundResult
+          correct={correct}
+          track={verse.track}
+          onAnimationComplete={handleResultAnimationComplete}
+        />
       }
     </div>
   );
