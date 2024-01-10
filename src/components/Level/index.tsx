@@ -1,77 +1,77 @@
 import { useState } from 'react';
+import { Button } from '../Button';
 
 export interface LevelProps {
   onSelect: (level: number) => void;
 }
 
 export const Level = ({onSelect}: LevelProps) => {
-  const [levelSelected, setLevelSelected] = useState<number>();
-
-  const handleSelect = (level: number) => { 
-    setLevelSelected(level);
-    setTimeout(() => {
-      onSelect(level);
-    }, 200);
+  const handleSelect = (level: number) => {
+    onSelect(level);
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-4 text-neutral-900">
-      <h2 className="text-2xl text-neutral-200">Select a level</h2>
-      <button
-        className={`w-32 h-16 bg-purple-200 rounded ${levelSelected === 0 ? 'bg-purple-400' : ''}`}
-        onClick={() => handleSelect(0)}
-      >
-        <div className="text-lg">
-          Chorus
+    <div className="w-full flex flex-col gap-8">
+      <h2 className="text-lg font-semibold text-center">
+        What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}&apos;s song is it?
+      </h2>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-center">
+          <h4 className="text-lg">Select a level</h4>
         </div>
-        <div className="text-xs">
-          Easy
+        <div className="flex flex-col items-center gap-4">
+          <Button
+            onClick={() => handleSelect(0)}
+          >
+            <div className="text-lg font-semibold leading-none">
+              CHORUS
+            </div>
+            <div className="text-xs leading-none">
+              easy
+            </div>
+          </Button>
+          <Button
+            onClick={() => handleSelect(1)}
+          >
+            <div className="text-lg font-semibold leading-none">
+              BRIDGE
+            </div>
+            <div className="text-xs leading-none">
+              medium
+            </div>
+          </Button>
+          <Button
+            onClick={() => handleSelect(2)}
+          >
+            <div className="text-lg font-semibold leading-none">
+              VERSE
+            </div>
+            <div className="text-xs leading-none">
+              hard
+            </div>
+          </Button>
+          <Button
+            onClick={() => handleSelect(3)}
+          >
+            <div className="text-lg font-semibold leading-none">
+              LINE
+            </div>
+            <div className="text-xs leading-none">
+              very hard
+            </div>
+          </Button>
+          <Button
+            onClick={() => handleSelect(4)}
+          >
+            <div className="text-lg font-semibold leading-none">
+              5 WORDS
+            </div>
+            <div className="text-xs leading-none">
+              insane
+            </div>
+          </Button>
         </div>
-      </button>
-      <button
-        className={`w-32 h-16 bg-purple-200 rounded ${levelSelected === 1 ? 'bg-purple-400' : ''}`}
-        onClick={() => handleSelect(1)}
-      >
-        <div className="text-lg">
-          Bridge
-        </div>
-        <div className="text-xs">
-          Medium
-        </div>
-      </button>
-      <button
-        className={`w-32 h-16 bg-purple-200 rounded ${levelSelected === 2 ? 'bg-purple-400' : ''}`}
-        onClick={() => handleSelect(2)}
-      >
-        <div className="text-lg">
-          Verse
-        </div>
-        <div className="text-xs">
-          Hard
-        </div>
-      </button>
-      <button
-        className={`w-32 h-16 bg-purple-200 rounded ${levelSelected === 3 ? 'bg-purple-400' : ''}`}
-        onClick={() => handleSelect(3)}
-      >
-        <div className="text-lg">
-          Line
-        </div>
-        <div className="text-xs">
-          Very hard
-        </div>
-      </button>
-      <button
-        className={`w-32 h-16 bg-purple-200 rounded ${levelSelected === 4 ? 'bg-purple-400' : ''}`}
-        onClick={() => handleSelect(4)}
-      >
-        <div className="text-lg">
-          5 words
-        </div>
-        <div className="text-xs">
-          Insane
-        </div>
-      </button>
+      </div>
     </div>
   );
 };
