@@ -25,11 +25,3 @@ export interface VerseApi {
   track: string;
   verses: Verse[];
 }
-
-export const levels = [
-  'chorus',
-  'bridge',
-  'verse',
-  'line',
-  'words',
-];
