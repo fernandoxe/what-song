@@ -1,4 +1,4 @@
-import { getRandomNVerses, getRandomVerse } from '@/services';
+import { getRandomNVerses } from '@/services';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

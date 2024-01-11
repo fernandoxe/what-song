@@ -10,9 +10,8 @@ export interface Track {
 }
 
 export interface TrackApi {
-  album: string;
-  track: string;
-  lyrics: string;
+  title: string;
+  tracks: string[];
 }
 
 export interface Verse {
@@ -23,5 +22,5 @@ export interface Verse {
 export interface VerseApi {
   album: string;
   track: string;
-  verses: Verse[];
+  verse: string;
 }

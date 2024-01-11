@@ -1,35 +1,84 @@
-import { Verse, VerseApi } from '@/interfaces';
-import { albums, trackNames, words5, words7 } from '../data';
+import { TrackApi, VerseApi } from '@/interfaces';
+import { albums, trackNames, bridges, chorus, verses, words5, words7 } from '../data';
 
-export const getTrackNames = () => {
+export const getTrackNames = (): TrackApi[] => {
   return trackNames;
 };
 
-export const countWords = (count: number) => {
-  const versesLessThanCount: Verse[] = [];
-  albums.forEach((album) => {
-    album.tracks.forEach((track) => {
-      track.verses.forEach((verse) => {
-        const verseWords = verse.verse.replace(/^\[.*\]\n/i, '').split(/\s+/).length;
-        if(verseWords <= count) {
-          versesLessThanCount.push(verse);
-        }
-      });
+export const getRandomNBridges = (count: number): VerseApi[] => {
+  const randomBridges = [];
+  for(let i = 0; i < count; i++) {
+    const randomAlbum = Math.floor(Math.random() * bridges.length);
+    const albumBridges = bridges[randomAlbum];
+    const randomTrack = Math.floor(Math.random() * albumBridges.tracks.length);
+    const trackBridges = albumBridges.tracks[randomTrack];
+    const randomVerse = Math.floor(Math.random() * trackBridges.verses.length);
+    const verse = trackBridges.verses[randomVerse];
+    randomBridges.push({
+      album: albumBridges.title,
+      track: trackBridges.title,
+      verse,
     });
-  });
-  return versesLessThanCount;
+  }
+  return randomBridges;
 };
 
-export const getRandomNLines = (count: number) => {
+export const getRandomNChorus = (count: number): VerseApi[] => {
+  const randomChorus = [];
+  for(let i = 0; i < count; i++) {
+    const randomAlbum = Math.floor(Math.random() * chorus.length);
+    const albumChorus = chorus[randomAlbum];
+    const randomTrack = Math.floor(Math.random() * albumChorus.tracks.length);
+    const trackChorus = albumChorus.tracks[randomTrack];
+    const randomVerse = Math.floor(Math.random() * trackChorus.verses.length);
+    const verse = trackChorus.verses[randomVerse];
+    randomChorus.push({
+      album: albumChorus.title,
+      track: trackChorus.title,
+      verse,
+    });
+  }
+  return randomChorus;
+}
+
+export const getRandomNVerses = (count: number): VerseApi[] => {
+  const randomVerses = [];
+  for(let i = 0; i < count; i++) {
+    const randomAlbum = Math.floor(Math.random() * verses.length);
+    const albumVerses = verses[randomAlbum];
+    const randomTrack = Math.floor(Math.random() * albumVerses.tracks.length);
+    const trackVerses = albumVerses.tracks[randomTrack];
+    const randomVerse = Math.floor(Math.random() * trackVerses.verses.length);
+    const verse = trackVerses.verses[randomVerse];
+    randomVerses.push({
+      album: albumVerses.title,
+      track: trackVerses.title,
+      verse,
+    });
+  }
+  return randomVerses;
+}
+
+// lines with at least 7 words
+export const getRandomNLines = (count: number): VerseApi[] => {
   const randomLines = [];
   for(let i = 0; i < count; i++) {
-    const randomLine = getRandomLine();
-    randomLines.push(randomLine);
+    const randomAlbum = Math.floor(Math.random() * words7.length);
+    const albumLines = words7[randomAlbum];
+    const randomTrack = Math.floor(Math.random() * albumLines.tracks.length);
+    const trackLines = albumLines.tracks[randomTrack];
+    const randomLine = Math.floor(Math.random() * trackLines.verses.length);
+    const verse = trackLines.verses[randomLine];
+    randomLines.push({
+      album: albumLines.title,
+      track: trackLines.title,
+      verse,
+    });
   }
   return randomLines;
 };
 
-export const getRandomNWords = (count: number) => {
+export const getRandomNWords = (count: number): VerseApi[] => {
   const randomWords = [];
   for(let i = 0; i < count; i++) {
     const randomWord = getRandom5Words();
@@ -38,22 +87,7 @@ export const getRandomNWords = (count: number) => {
   return randomWords;
 };
 
-export const getRandomLine = () => {
-  const randomAlbum = Math.floor(Math.random() * words7.length);
-  const album = words7[randomAlbum];
-  const randomTrack = Math.floor(Math.random() * album.tracks.length);
-  const track = album.tracks[randomTrack];
-  const randomLine = Math.floor(Math.random() * track.verses.length);
-  return {
-    album: album.title,
-    track: track.title,
-    verses: [
-      {verse: track.verses[randomLine]}
-    ],
-  };
-};
-
-export const getRandom5Words = () => {
+export const getRandom5Words = (): VerseApi => {
   const randomAlbum = Math.floor(Math.random() * words5.length);
   const album = words5[randomAlbum];
   const randomTrack = Math.floor(Math.random() * album.tracks.length);
@@ -65,117 +99,9 @@ export const getRandom5Words = () => {
   return {
     album: album.title,
     track: track.title,
-    verses: [
-      {verse: words.slice(randomWords, randomWords + 5).join(' ')}
-    ],
+    verse: words.slice(randomWords, randomWords + 5).join(' '),
   };
 };
-
-export const getRandomNBridges = (count: number): VerseApi[] => {
-  const randomBridges = [];
-  for(let i = 0; i < count; i++) {
-    const randomBridge = getRandomBridge();
-    randomBridges.push(randomBridge);
-  }
-  return randomBridges;
-};
-
-export const getRandomNChorus = (count: number): VerseApi[] => {
-  const randomChorus = [];
-  for(let i = 0; i < count; i++) {
-    const randomVerse = getRandomChorus();
-    randomChorus.push(randomVerse);
-  }
-  return randomChorus;
-};
-
-export const getRandomNVerses = (count: number): VerseApi[] => {
-  const randomVerses = [];
-  for(let i = 0; i < count; i++) {
-    const randomVerse = getRandomVerse();
-    randomVerses.push(randomVerse);
-  }
-  return randomVerses;
-};
-
-export const getRandomBridge = (): VerseApi => {
-  const allBridges = albums.map((album, i) => getBridges(i)).flat();
-  const randomBridge = Math.floor(Math.random() * allBridges.length);
-  const trackBridges = allBridges[randomBridge];
-  const bridge = trackBridges.verses[Math.floor(Math.random() * trackBridges.verses.length)];
-  return {
-    album: trackBridges.album,
-    track: trackBridges.track,
-    verses: [bridge],
-  };
-};
-
-export const getRandomChorus = (): VerseApi => {
-  const allChorus = albums.map((album, i) => getChorus(i)).flat();
-  const randomChorus = Math.floor(Math.random() * allChorus.length);
-  const chorusVerses: VerseApi = allChorus[randomChorus];
-  const chorus = chorusVerses.verses[Math.floor(Math.random() * chorusVerses.verses.length)];
-  return {
-    album: chorusVerses.album,
-    track: chorusVerses.track,
-    verses: [chorus],
-  };
-};
-
-export const getRandomVerse = (): VerseApi => {
-  const allVerses = albums.map((album, i) => getVerses(i)).flat();
-  const randomVerse = Math.floor(Math.random() * allVerses.length);
-  const verses: VerseApi = allVerses[randomVerse];
-  const verse = verses.verses[Math.floor(Math.random() * verses.verses.length)];
-  return {
-    album: verses.album,
-    track: verses.track,
-    verses: [verse],
-  };
-};
-
-export const getBridges = (album: number) => {
-  const tracksWithBridge = albums[album].tracks
-    .filter((track) => track.verses.some(isBridge));
-  const bridges: VerseApi[] = tracksWithBridge.map((track) => {
-    return {
-      album: albums[album].title,
-      track: track.title,
-      verses: track.verses.filter(isBridge),
-    };
-  });
-  return bridges;
-};
-
-export const getChorus = (album: number) => {
-  const tracksWithBridge = albums[album].tracks
-    .filter((track) => track.verses.some(isChorus));
-  const chorus: VerseApi[] = tracksWithBridge.map((track) => {
-    return {
-      album: albums[album].title,
-      track: track.title,
-      verses: track.verses.filter(isChorus),
-    };
-  });
-  return chorus;
-};
-
-export const getVerses = (album: number) => {
-  const tracks = albums[album].tracks;
-  const tracksWithVerse = tracks.filter((track) => track.verses.some(isVerse));
-  const verses: VerseApi[] = tracksWithVerse.map((track) => {
-    return {
-      album: albums[album].title,
-      track: track.title,
-      verses: track.verses.filter(isVerse),
-    };
-  });
-  return verses;
-};
-
-const isChorus = (verse: Verse) => verse.name.toLowerCase().startsWith('chorus');
-const isBridge = (verse: Verse) => verse.name.toLowerCase().startsWith('bridge');
-const isVerse = (verse: Verse) => !isChorus(verse) && !isBridge(verse);
 
 export const formatTime = (time: number) => {
   const seconds = Math.floor(time / 1000);
