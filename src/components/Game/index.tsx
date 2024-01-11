@@ -50,7 +50,7 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
     getGameVerses();
   }, [level]);
 
-  const nextRound = (results: {track: string, correct: boolean}[]) => {
+  const nextRound = () => {
     const nextRound = round + 1;
     if(nextRound > ROUNDS) {
       finishGame();
@@ -67,7 +67,7 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
   const handleFinish = (track: string, answer: string, correct: boolean, time: number) => {
     const newResults = [...results, {track, answer, correct, time}];
     setResults(newResults);
-    nextRound(newResults);
+    nextRound();
   };
 
   const handlePlayAgain = () => {
@@ -79,30 +79,28 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
     <div
       className="w-full max-w-xl flex flex-col items-center gap-4"
     >
+      <div className="flex flex-col items-center gap-2">
+        <h2 className="text-lg font-semibold">
+          What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}&apos;s song is it?
+        </h2>
+        <div>
+          <h3 className="text-base font-semibold">Level: {LEVELS[level].name} ({LEVELS[level].difficulty})</h3>
+        </div>
+      </div>
       {!gameVerses.length && !tracks.length &&
         <Loader />
       }
       {currentVerse && !gameFinished &&
-        <>
-          <div className="flex flex-col items-center gap-2">
-            <h2 className="text-lg font-semibold">
-              What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}&apos;s song is it?
-            </h2>
-            <div>
-              <h3 className="text-base font-semibold">Level: {LEVELS[level].name} ({LEVELS[level].difficulty})</h3>
-            </div>
-          </div>
-          <div className="w-full">
-            <Round
-              verse={currentVerse}
-              tracks={tracks}
-              round={round}
-              rounds={ROUNDS}
-              onFinish={handleFinish}
-              level={level}
-            />  
-          </div>
-        </>
+        <div className="w-full">
+          <Round
+            verse={currentVerse}
+            tracks={tracks}
+            round={round}
+            rounds={ROUNDS}
+            onFinish={handleFinish}
+            level={level}
+          />  
+        </div>
       }
       {gameFinished &&
         <>
