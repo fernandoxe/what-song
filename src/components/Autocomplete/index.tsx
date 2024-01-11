@@ -42,6 +42,10 @@ export const Autocomplete = ({
         disabled={disabled}
         ref={inputRef}
         onFocus={onFocus}
+        autoCapitalize="off"
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck="false"
       />
       <ul className="w-full max-h-64 overflow-scroll mt-1 rounded shadow">
         {filteredTracks.map((track, i) => (
