@@ -7,6 +7,7 @@ import { Results } from '../Results';
 import { Button } from '../Button';
 import { Loader } from '../Loader';
 import { clickPlayAgain } from '@/services/gtm';
+import { captureException } from '@sentry/nextjs';
 
 export interface GameProps {
   level: number;
@@ -28,7 +29,8 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
         const tracks = data.map((album: any) => album.tracks).flat().sort();
         setTracks(tracks);
       } catch(error) {
-        console.error(error);
+        // console.error(error);
+        captureException(error);
       }
     };
 
@@ -43,7 +45,8 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
         setRound(1);
         setCurrentVerse(data[0]);
       } catch(error) {
-        console.error(error);
+        // console.error(error);
+        captureException(error);
       }
     };
 

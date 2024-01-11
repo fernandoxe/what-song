@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { formatTime } from '@/services';
 import { LEVELS } from '@/constants';
 import { showShare } from '@/services/gtm';
+import { captureException } from '@sentry/nextjs';
 
 export interface ShareProps {
   children: ReactNode;
@@ -222,7 +223,8 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
       try {
         navigator.share(shareData);
       } catch (err: any) {
-        console.error(err);
+        // console.error(err);
+        captureException(err);
       }
     }, 'image/jpeg', 0.8);
   };
