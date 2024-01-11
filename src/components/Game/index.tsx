@@ -6,6 +6,7 @@ import { LEVELS, ROUNDS } from '@/constants';
 import { Results } from '../Results';
 import { Button } from '../Button';
 import { Loader } from '../Loader';
+import { clickPlayAgain } from '@/services/gtm';
 
 export interface GameProps {
   level: number;
@@ -21,6 +22,20 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
   const [gameFinished, setGameFinished] = useState<boolean>(false);
 
   useEffect(() => {
+    const getTracks = async () => {
+      try {
+        const { data } = await axios.get(`api/tracks`);
+        const tracks = data.map((album: any) => album.tracks).flat().sort();
+        setTracks(tracks);
+      } catch(error) {
+        console.error(error);
+      }
+    };
+
+    getTracks();
+  }, []);
+
+  useEffect(() => {
     const getGameVerses = async () => {
       try {
         const { data } = await axios.get<VerseApi[]>(`/api/${LEVELS[level].code}/${ROUNDS}`);
@@ -32,31 +47,20 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
       }
     };
 
-    const getTracks = async () => {
-      try {
-        const { data } = await axios.get(`api/tracks`);
-        const tracks = data.map((album: any) => album.tracks).flat().sort();
-        setTracks(tracks);
-      } catch(error) {
-        console.error(error);
-      }
-    };
-
     getGameVerses();
-    getTracks();
   }, [level]);
 
   const nextRound = (results: {track: string, correct: boolean}[]) => {
     const nextRound = round + 1;
     if(nextRound > ROUNDS) {
-      finishGame(results);
+      finishGame();
       return;
     }
     setRound(nextRound);
     setCurrentVerse(gameVerses[nextRound - 1]);
   };
 
-  const finishGame = (results: {track: string, correct: boolean}[]) => {
+  const finishGame = () => {
     setGameFinished(true);
   };
 
@@ -68,6 +72,7 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
 
   const handlePlayAgain = () => {
     onPlayAgain();
+    clickPlayAgain(level, results.filter(result => result.correct).length);
   };
 
   return (
@@ -94,6 +99,7 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
               round={round}
               rounds={ROUNDS}
               onFinish={handleFinish}
+              level={level}
             />  
           </div>
         </>

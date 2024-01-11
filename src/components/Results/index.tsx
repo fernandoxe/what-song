@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatTime } from '@/services';
 import { Switch } from '../Switch';
 import { Share } from '@/components/Share';
 import { LEVELS } from '@/constants';
+import { clickShare, clickShowAnswers, showResults } from '@/services/gtm';
 
 export interface ResultsProps {
   level: number;
@@ -16,6 +17,24 @@ export interface ResultsProps {
 
 export const Results = ({level, results}: ResultsProps) => {
   const [showYourAnswers, setShowYourAnswers] = useState(false);
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    showResults(
+      level,
+      results.filter(result => result.correct).length,
+      results.reduce((acc, result) => acc + result.time, 0)
+    );
+  }, []);
+
+  const handleSwitchClick = () => {
+    setShowYourAnswers(!showYourAnswers);
+    clickShowAnswers(level, results.filter(result => !result.correct).length, !showYourAnswers);
+  };
+
+  const handleShareClick = () => {
+    clickShare(level, results.filter(result => !result.correct).length);
+  };
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -67,12 +86,13 @@ export const Results = ({level, results}: ResultsProps) => {
             results={results}
             showYourAnswers={showYourAnswers}
             level={level}
+            onClick={handleShareClick}
           >
             Share
           </Share>
         </div>
         <Switch
-          onClick={() => setShowYourAnswers(!showYourAnswers)}
+          onClick={handleSwitchClick}
           checked={showYourAnswers}
         >
           Show my answers

@@ -3,6 +3,7 @@ import { Share as ShareIcon } from '@/icons/share';
 import { motion } from 'framer-motion';
 import { formatTime } from '@/services';
 import { LEVELS } from '@/constants';
+import { showShare } from '@/services/gtm';
 
 export interface ShareProps {
   children: ReactNode;
@@ -19,6 +20,7 @@ export interface ShareProps {
 
 export const Share = ({children, results, showYourAnswers, level, onClick}: ShareProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [canShare, setCanShare] = useState<boolean>(false);
 
   const createImage = () => {
     const canvas = canvasRef.current;
@@ -231,13 +233,15 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
     onClick?.();
   };
 
-  // useEffect(() => {
-  //   createImage();
-  // }, [results, showYourAnswers]);
+  useEffect(() => {
+    // createImage();
+    setCanShare(!!navigator.canShare);
+    showShare(!!navigator.canShare);
+  }, []);
 
   return (
     <>
-      {!!navigator.canShare &&
+      {canShare &&
         <>
           <div
             className="flex items-center gap-1 select-none"

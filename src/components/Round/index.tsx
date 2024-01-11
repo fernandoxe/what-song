@@ -4,16 +4,18 @@ import { Autocomplete } from '../Autocomplete';
 import { RoundResult } from '../RoundResult';
 import { useStopwatch } from '@/hooks/useStopwatch';
 import { formatTime } from '@/services';
+import { selectTrack } from '@/services/gtm';
 
 export interface RoundProps {
   verse: VerseApi;
   tracks: string[];
   round: number;
   rounds: number;
+  level: number;
   onFinish: (track: string, answer: string, correct: boolean, time: number) => void;
 }
 
-export const Round = ({verse, tracks, round, rounds, onFinish}: RoundProps) => {
+export const Round = ({verse, tracks, round, rounds, level, onFinish}: RoundProps) => {
   const [correct, setCorrect] = useState(false);
   const [trackName, setTrackName] = useState('');
   const [filteredTracks, setFilteredTracks] = useState<string[]>([]);
@@ -37,6 +39,13 @@ export const Round = ({verse, tracks, round, rounds, onFinish}: RoundProps) => {
       setCorrect(false);
     }
     setShowResult(true);
+    selectTrack(
+      level,
+      verse.track,
+      trackName,
+      time,
+      isCorrect
+    );
   };
 
   const handleResultAnimationComplete = () => {
@@ -86,8 +95,8 @@ export const Round = ({verse, tracks, round, rounds, onFinish}: RoundProps) => {
           className="flex flex-col font-['Indie_Flower',_cursive] w-full min-h-28 max-h-44 overflow-scroll whitespace-pre-wrap bg-purple-50 rounded py-3 shadow"
           ref={lyricsRef}
         >
-          <div className="font-semibold grow bg-[linear-gradient(#c2c4d7_1px,_transparent_1px)] bg-[size:_100%_1.5rem] bg-[position:_0_-1px] pt-2 px-3">
-            {verse.verses[0].verse.replace(/^\[.*\]\n/, '')}
+          <div className="grow bg-[linear-gradient(#c2c4d7_1px,_transparent_1px)] bg-[size:_100%_1.5rem] bg-[position:_0_-1px] pt-2 px-3">
+            {verse.verse.replace(/^\[.*\]\n/, '')}
           </div>
         </div>
       </div>

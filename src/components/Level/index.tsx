@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Button } from '../Button';
+import { clickLevel } from '@/services/gtm';
 
 export interface LevelProps {
   onSelect: (level: number) => void;
@@ -8,7 +9,12 @@ export interface LevelProps {
 export const Level = ({onSelect}: LevelProps) => {
   const handleSelect = (level: number) => {
     onSelect(level);
+    clickLevel(level);
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="w-full flex flex-col gap-8">

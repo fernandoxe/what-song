@@ -10,6 +10,10 @@ export const Home = () => {
     setLevel(level);
   };
 
+  const handlePlayAgain = () => {
+    setLevel(-1);
+  };
+
   return (
     <main className="w-full flex flex-col items-center justify-between gap-4 p-4">
       { level < 0 &&
@@ -18,7 +22,7 @@ export const Home = () => {
       {level >= 0 &&
         <Game
           level={level}
-          onPlayAgain={() => setLevel(-1)}
+          onPlayAgain={handlePlayAgain}
         />
       }
     </main>
