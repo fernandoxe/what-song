@@ -38,14 +38,6 @@ export const Results = ({level, results}: ResultsProps) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div className="flex flex-col items-center gap-2">
-        <h2 className="text-lg font-semibold">
-          What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}&apos;s song is it?
-        </h2>
-        <div>
-          <h3 className="font-semibold">Level: {LEVELS[level].name} ({LEVELS[level].difficulty})</h3>
-        </div>
-      </div>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between">
           <div className="font-semibold">
