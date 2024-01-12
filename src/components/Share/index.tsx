@@ -213,7 +213,7 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
     if (!canvas) return;
     canvas.toBlob(blob => {
       if (!blob) return;
-      const image = new File([blob], 'results.jpg', {type: 'image/jpeg'});
+      const image = new File([blob], `${process.env.NEXT_PUBLIC_SITE_SHORT_TITLE}.jpg`, {type: 'image/jpeg'});
       const shareData = {
         files: [image],
         // title: process.env.NEXT_PUBLIC_SITE_TITLE || '',
