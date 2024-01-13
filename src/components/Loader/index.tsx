@@ -1,6 +1,13 @@
-export const Loader = () => {
+export interface LoaderProps {
+  borderWidth?: string;
+};
+
+export const Loader = ({borderWidth = '1px'}: LoaderProps) => {
   return (
-    <div className="w-12 h-12 border-4 border-purple-700 border-l-transparent rounded-full animate-spin">
+    <div
+      className={`size-full border-inherit border-l-transparent rounded-full animate-spin`}
+      style={{borderWidth}}
+    >
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { formatTime } from '@/services';
 import { LEVELS } from '@/constants';
 import { showShare } from '@/services/gtm';
 import { captureException } from '@sentry/nextjs';
+import { Loader } from '../Loader';
 
 export interface ShareProps {
   children: ReactNode;
@@ -22,6 +23,8 @@ export interface ShareProps {
 export const Share = ({children, results, showYourAnswers, level, onClick}: ShareProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canShare, setCanShare] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [enabled, setEnabled] = useState<boolean>(true);
 
   const createImage = () => {
     const canvas = canvasRef.current;
@@ -36,12 +39,12 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
       paddingY: 60,
       backgroundColor: '#f3e8ff',
       textBaseline: 'top',
-      fontFamily: '"Open Sans", sans-serif',
+      fontFamily: `${getComputedStyle(ctx.canvas).getPropertyValue('--font-open-sans')}, sans-serif`,
       gap: 34,
     };
 
     const title = {
-      text: `What ${process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}'s song is it?`,
+      text: `What ${process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME} song is it?`,
       size: 46,
       lineHeight: 46,
       textAlign: 'center',
@@ -183,7 +186,7 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
         // draw answer
         ctx.font = `${answer.size}px ${canvasProps.fontFamily}`;
         ctx.fillStyle = answer.color;
-        ctx.fillText(`Your answer: ${track.answer}`, textTrack.x, list.y + listBox.gap + (list.gap * index) + (listBox.h * index) + listBox.gap + textTrack.lineHeight);
+        ctx.fillText(`My answer: ${track.answer}`, textTrack.x, list.y + listBox.gap + (list.gap * index) + (listBox.h * index) + listBox.gap + textTrack.lineHeight);
       } else {
         // draw track without answer
         ctx.fillText(track.track, textTrack.x, list.y + (list.gap * index) + (listBox.h * index) + (listBox.h / 2) - (textTrack.lineHeight / 2));
@@ -210,9 +213,17 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
   const share = async () => {
     createImage();
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      setLoading(false);
+      setEnabled(true);
+      return;
+    };
     canvas.toBlob(blob => {
-      if (!blob) return;
+      if (!blob) {
+        setLoading(false);
+        setEnabled(true);
+        return;
+      };
       const image = new File([blob], `${process.env.NEXT_PUBLIC_SITE_SHORT_TITLE}.jpg`, {type: 'image/jpeg'});
       const shareData = {
         files: [image],
@@ -221,8 +232,13 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
         url: process.env.NEXT_PUBLIC_SITE_URL || '',
       };
       try {
-        navigator.share(shareData);
+        navigator.share(shareData).finally(() => {
+          setLoading(false);
+          setEnabled(true);
+        });
       } catch (err: any) {
+        setLoading(false);
+        setEnabled(true);
         // console.error(err);
         captureException(err);
       }
@@ -230,6 +246,9 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
   };
 
   const handleClick = () => {
+    if(!enabled) return;
+    setLoading(true);
+    setEnabled(false);
     createImage();
     share();
     onClick?.();
@@ -249,12 +268,13 @@ export const Share = ({children, results, showYourAnswers, level, onClick}: Shar
             className="flex items-center gap-1 select-none"
           >
             <motion.div
-              className="size-8 p-2 bg-purple-600 text-purple-100 rounded-full"
+              className="size-8 p-2 bg-purple-700 text-purple-100 border-purple-100 rounded-full"
               onTap={handleClick}
               whileTap={{scale: 0.9, backgroundColor: 'rgba(168, 85, 247)'}}
               transition={{duration: 0.1}}
             >
-              <ShareIcon />
+              {loading && <Loader borderWidth='2px' />}
+              {!loading && <ShareIcon />}
             </motion.div>
             <label className="text-xs">
               {children}

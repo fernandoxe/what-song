@@ -50,13 +50,13 @@ export const Round = ({verse, tracks, round, rounds, level, onFinish}: RoundProp
 
   const handleResultAnimationComplete = () => {
     setTimeout(() => {
+      setShowResult(false);
       onFinish(verse.track, trackName, correct, time);
     }, 1000);
   };
 
   useEffect(() => {
     setCorrect(false);
-    setShowResult(false);
     setTrackName('');
     setIsSelectedTrack(false);
     setFocusInput(true);
@@ -87,12 +87,12 @@ export const Round = ({verse, tracks, round, rounds, level, onFinish}: RoundProp
           <div ref={roundRef}>
             {round} / {rounds}
           </div>
-          <div className="font-mono">
+          <div className="font-mono select-none">
             {formatTime(time)}s
           </div>
         </div>
         <div
-          className="flex flex-col font-['Indie_Flower',_cursive] w-full min-h-28 max-h-44 overflow-scroll whitespace-pre-wrap bg-purple-50 rounded py-3 shadow"
+          className="flex flex-col font-indie w-full min-h-28 max-h-44 overflow-scroll whitespace-pre-wrap bg-purple-50 rounded py-3 shadow select-none"
           ref={lyricsRef}
         >
           <div className="grow bg-[linear-gradient(#c2c4d7_1px,_transparent_1px)] bg-[size:_100%_1.5rem] bg-[position:_0_-1px] pt-2 px-3">

@@ -33,11 +33,7 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
         captureException(error);
       }
     };
-
-    getTracks();
-  }, []);
-
-  useEffect(() => {
+    
     const getGameVerses = async () => {
       try {
         const { data } = await axios.get<VerseApi[]>(`/api/${LEVELS[level].code}/${ROUNDS}`);
@@ -49,7 +45,8 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
         captureException(error);
       }
     };
-
+    
+    getTracks();
     getGameVerses();
   }, [level]);
 
@@ -84,14 +81,16 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
     >
       <div className="flex flex-col items-center gap-2">
         <h2 className="text-lg font-semibold">
-          What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}&apos;s song is it?
+          What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME} song is it?
         </h2>
         <div>
           <h3 className="text-base font-semibold">Level: {LEVELS[level].name} ({LEVELS[level].difficulty})</h3>
         </div>
       </div>
-      {!gameVerses.length && !tracks.length &&
-        <Loader />
+      {(!gameVerses.length || !tracks.length) &&
+        <div className="size-12 border-purple-700">
+          <Loader borderWidth='4px' />
+        </div>
       }
       {currentVerse && !gameFinished &&
         <div className="w-full">

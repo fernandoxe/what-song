@@ -19,7 +19,7 @@ export const Level = ({onSelect}: LevelProps) => {
   return (
     <div className="w-full flex flex-col gap-8">
       <h2 className="text-lg font-semibold text-center">
-        What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME}&apos;s song is it?
+        What {process.env.NEXT_PUBLIC_SITE_ARTIST_SHORT_NAME} song is it?
       </h2>
       <div className="flex flex-col gap-4">
         <div className="flex justify-center">
