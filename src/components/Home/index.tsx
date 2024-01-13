@@ -15,7 +15,7 @@ export const Home = () => {
   };
 
   return (
-    <main className="w-full flex flex-col items-center justify-between gap-4 p-4">
+    <main className="w-full font-open flex flex-col items-center justify-between gap-4 p-4">
       { level < 0 &&
         <Level onSelect={handleLevelSelect}/>
       }

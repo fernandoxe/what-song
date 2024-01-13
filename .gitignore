@@ -35,6 +35,7 @@ yarn-error.log*
 next-env.d.ts
 
 src/data
+public
 
 # Sentry Config File
 .sentryclirc
