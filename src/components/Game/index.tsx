@@ -25,7 +25,7 @@ export const Game = ({level, onPlayAgain}: GameProps) => {
   useEffect(() => {
     const getTracks = async () => {
       try {
-        const { data } = await axios.get(`api/tracks`);
+        const { data } = await axios.get(`/api/tracks`);
         const tracks = data.map((album: any) => album.tracks).flat().sort();
         setTracks(tracks);
       } catch(error) {
